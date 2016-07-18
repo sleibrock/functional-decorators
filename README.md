@@ -81,7 +81,7 @@ Okay, here's a function that will return to you a sum of the list of absolute
 values of a function sin(x**2) where x is a radian-value converted from
 degrees.
 
-```
+``` python
 @_foldl(add)
 @_fmap(abs)
 @_fmap(sin)
