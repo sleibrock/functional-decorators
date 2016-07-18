@@ -32,4 +32,11 @@ def head(x):
 def tail(x):
     return x[1:]
 
+# Test if a function is even or odd
+def even(x):
+    return not x&1
+
+def odd(x):
+    return x&1
+
 # end

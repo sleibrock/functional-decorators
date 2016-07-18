@@ -18,8 +18,9 @@ def _id(f):
 # their chains, we will get weird-looking log messages
 def _puts(f):
     def inner(x):
-        print("Current state is {}".format(f(x)))
-        return f(x)
+        data = f(x)
+        print("Current state is {}".format(data))
+        return data 
     return inner
 
 # Numeric functions (add1/sub1 from racket)
@@ -36,6 +37,35 @@ def _head(f):
 def _tail(f):
     return craft(f)(tail)
 
+# Create a list using range(x)
+def _range(f):
+    return craft(f)(range)
+
+# Creates a range of nums from x to y inclusive
+def _to(y):
+    def wrap(f):
+        def inner(x):
+            return range(f(x), y+1)
+        return inner
+    return wrap
+
+# Enumerate a list of items [(0,a), (1,b), ...]
+def _enum(f):
+    return craft(f)(enumerate)
+
+# Apply an any() to the object
+def _any(f):
+    return craft(f)(any)
+
+# Apply an all() to the object
+def _all(f):
+    return craft(f)(all)
+
+# Apply a list function to the result (useful for Python3)
+# Functions in Py3 return generators as opposed to raw lists
+def _list(f):
+    return craft(f)(list)
+
 # Functor mapping - only functor is List thus far
 def _fmap(func):
     def wrap(f):
@@ -44,11 +74,16 @@ def _fmap(func):
         return inner
     return wrap
 
-# Create a list using range(x)
-def _range(f):
-    return craft(f)(range)
+# Filter - apply a filter over an iterable
+def _filter(func):
+    def wrap(f):
+        def inner(x):
+            return filter(func, f(x))
+        return inner
+    return wrap
 
 # Fold-left over an iterable of items
+# Should only work when a list contains only one type
 def _foldl(func):
     def wrap(f):
         def inner(x):

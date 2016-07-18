@@ -78,7 +78,7 @@ Bottom-line answer: *NO*. But if you want to have some fun, yes!
 # Give me something crazy
 
 Okay, here's a function that will return to you a sum of the list of absolute
-values of a function sin(x**2) where x is a radian-value converted from
+values of a function sin(x^2) where x is a radian-value converted from
 degrees.
 
 ``` python
@@ -120,27 +120,24 @@ def something(x):
     return sum([abs(sin(square(radians(z)))) for z in range(x)])
 ```
 
-# Closing Remarks
+That one actually isn't even remotely equal to what the decorators are doing.
+A real equal would be...
 
-This was a project inspired by functional programming, and since Python is trying
-it's hardest *not* to be a functional language by any means, I thought I would
-adhere to Python rules and try something unconventional. It's funny to write an
-entire function without actually writing any meaningful code _inside_ the function
-definition. But the performance surely takes a hit when not using list comps
-due to CPython's list comp internals.
+``` python
+def something(n):
+	return sum([abs(x) for x in
+		[sin(y) for y in
+			[square(z) for z in
+				[radians(j) for j in range(n)]]]])
+```
+
+Disgusting, yes. But that's what the expanded form looks like in reality.
 
 # Can we log the state changes in the decorator chains?
 
-Unfortunately I don't think it's possible. I tried originally adding a kind of
-log function into the system but since the log function would be part of the
-decorator chain, higher-level logs would execute lower-level logs, and if there
-were multiple logs in a chain, it would execute the lower level-logs multiple
-times.
-
-In order to get the current state of a value, you have to execute the block sequence
-we're currently in, otherwise we won't get any information at all until we execute
-where we are. Here's the output of a function with logging that logs three times
-to track the _add1_ function progress.
+There's a decorator called puts that allows us to print out the output of the 
+current state of the program. It can be wedged inbetween decorators so you 
+can see what's being passed on inbetween decorators.
 
 ```
 >>> @_puts
@@ -151,18 +148,19 @@ to track the _add1_ function progress.
 ... @_add1
 ... def f(x): return x
 ... 
->>> f(10)
-Current state is 11
-Current state is 12
-Current state is 11
-Current state is 13
-Current state is 11
-Current state is 12
-Current state is 11
-13
+>>> f(3)
+Current state is 4
+Current state is 5
+Current state is 6
+6
 ```
 
-So as far as I know, there's not much we can do to log progress of a decorated
-function.
+# Closing Remarks
 
-The _puts_ decorator is available to use, but it's output will look very confusing.
+This was a project inspired by functional programming, and since Python is trying
+it's hardest *not* to be a functional language by any means, I thought I would
+adhere to Python rules and try something unconventional. It's funny to write an
+entire function without actually writing any meaningful code _inside_ the function
+definition. But the performance surely takes a hit when not using list comps
+due to CPython's list comp internals.
+
