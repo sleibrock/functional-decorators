@@ -43,7 +43,7 @@ Neat, right? We really didn't do anything at all to create this function.
 
 # The Downside
 
-You have to right it in an order *backwards* of what you want to do. Naturally
+You have to write it in an order *backwards* of what you want to do. Naturally
 the function we wrote, we would have verbally said "create a list of numbers, 
 apply a function to them, and sum them up". However the decorator defintion is
 completely the opposite. It's "Add up a list of numbers that have an operation 
@@ -53,7 +53,7 @@ So the order that which we write these functions may be considered confusing at
 first, but it's not as bad as you might think initially. The formal definition
 of this code block would have looked like:
 
-```
+``` python
 def fold_cubes(x):
     return sum([cube(x) for z in range(x)])
 ```
@@ -115,7 +115,7 @@ functions where we can possibly just compose them all together into one big
 function. Unfortunately the list comprehension just looks a little bit worse for
 wear...
 
-```
+``` python
 def something(x):
     return sum([abs(sin(square(radians(z)))) for z in range(x)])
 ```
@@ -129,3 +129,40 @@ entire function without actually writing any meaningful code _inside_ the functi
 definition. But the performance surely takes a hit when not using list comps
 due to CPython's list comp internals.
 
+# Can we log the state changes in the decorator chains?
+
+Unfortunately I don't think it's possible. I tried originally adding a kind of
+log function into the system but since the log function would be part of the
+decorator chain, higher-level logs would execute lower-level logs, and if there
+were multiple logs in a chain, it would execute the lower level-logs multiple
+times.
+
+In order to get the current state of a value, you have to execute the block sequence
+we're currently in, otherwise we won't get any information at all until we execute
+where we are. Here's the output of a function with logging that logs three times
+to track the _add1_ function progress.
+
+```
+>>> @_puts
+... @_add1
+... @_puts
+... @_add1
+... @_puts
+... @_add1
+... def f(x): return x
+... 
+>>> f(10)
+Current state is 11
+Current state is 12
+Current state is 11
+Current state is 13
+Current state is 11
+Current state is 12
+Current state is 11
+13
+```
+
+So as far as I know, there's not much we can do to log progress of a decorated
+function.
+
+The _puts_ decorator is available to use, but it's output will look very confusing.

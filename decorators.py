@@ -4,12 +4,23 @@
 from funcs import *
 
 # Create an anonymous function applying the function given
+# Curry it so we can take in the current state and wrap it
+# around the function taken in
 def craft(fun):
     return lambda s: lambda x: s(fun(x))
 
 # Classic ID function
 def _id(f):
     return craft(f)(lambda x: x)
+
+# Logging function to output the current state
+# Note that if functions have multiple logs in
+# their chains, we will get weird-looking log messages
+def _puts(f):
+    def inner(x):
+        print("Current state is {}".format(f(x)))
+        return f(x)
+    return inner
 
 # Numeric functions (add1/sub1 from racket)
 def _add1(f):
@@ -41,7 +52,7 @@ def _range(f):
 def _foldl(func):
     def wrap(f):
         def inner(x):
-            res = f(x)
+            res = f(x) # store the results so we don't apply f twice
             z = head(res)
             for y in tail(res):
                 z = func(z, y)
