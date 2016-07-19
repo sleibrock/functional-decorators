@@ -70,7 +70,7 @@ def _list(f):
 def _fmap(func):
     def wrap(f):
         def inner(x):
-            return map(func, f(x))
+            return list(map(func, f(x)))
         return inner
     return wrap
 
@@ -78,7 +78,7 @@ def _fmap(func):
 def _filter(func):
     def wrap(f):
         def inner(x):
-            return filter(func, f(x))
+            return list(filter(func, f(x)))
         return inner
     return wrap
 

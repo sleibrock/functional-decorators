@@ -26,11 +26,11 @@ def power(x):
 
 # Head of a sequence
 def head(x):
-    return x[0]
+    return list(x)[0]
 
 # Tail of a sequence
 def tail(x):
-    return x[1:]
+    return list(x)[1:]
 
 # Test if a function is even or odd
 def even(x):
